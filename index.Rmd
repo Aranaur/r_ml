@@ -1,0 +1,23 @@
+--- 
+title: "Машинне навчання"
+author: "Ігор Мірошниченко"
+date: "`r Sys.Date()`"
+documentclass: book
+bibliography: book.bib
+biblio-style: apalike
+link-citations: yes
+description: "Підручик з основ машинного навчання"
+---
+# Машинне навчання {.unnumbered}
+
+*Ігор Мірошниченко*
+
+*`r Sys.Date()`*
+
+## Передмова {.unnumbered}
+
+> Наразі підручник в процесі розробки.
+
+> Якщо ви помітили неточності або помилки, будь-ласка напишіть мені: `ihor.miroshnychenko@kneu.ua`
+
+

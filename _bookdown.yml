@@ -1,0 +1,14 @@
+book_filename: "r_ml"
+delete_merged_file: true
+language:
+  label:
+    fig: 'Рисунок '
+    tab: 'Таблиця '
+    eq: 'Рівняння '
+    thm: 'Теорема '
+    exm: 'Приклад '
+    exr: 'Вправа '
+    solution: 'Рішення. '
+  ui:
+    chapter_name: " "
+output_dir: docs
