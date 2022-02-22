@@ -1,0 +1,363 @@
+```{r echo = FALSE, purl = FALSE, cache = FALSE, include=FALSE}
+knitr::opts_knit$set(global.par = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, collapse = TRUE, out.width = '100%', fig.align='center')
+library(tidyverse)
+library(vroom)
+library(gapminder)
+library(readxl)
+```
+
+# Tidymodels {#tidymodels}
+***
+
+Tidymodels - фреймворк для побудови моделей машинного навчання за допомогою мови програмування R.
+
+```{r tidymodels}
+library(tidymodels)
+```
+
+Розглянемо датасет з пінгвінами, який прийшов на заміну класичному датасету про іриси.
+
+```{r palmerpenguins}
+library(palmerpenguins)
+
+penguins
+
+glimpse(penguins)
+
+penguins <- penguins %>% 
+  relocate(body_mass_g)
+```
+
+Він добре підходить як під задачі регресії, так і під задачі класифікації.
+
+## Розбиття вибірки на тестову та навчальну.
+
+Звичайне розбиття
+```{r split}
+set.seed(2022)
+penguins_split <- initial_split(penguins, prop = .8)
+
+penguins_split
+
+penguins_train <- training(penguins_split)
+
+penguins_test  <-  testing(penguins_split)
+
+dim(penguins_train)
+```
+
+
+```{r split_strata}
+set.seed(2022)
+
+penguins_split <- initial_split(penguins, prop = .8, strata = sex)
+
+penguins_split
+
+penguins_train <- training(penguins_split)
+
+penguins_test  <-  testing(penguins_split)
+
+dim(penguins_train)
+```
+
+## Побудова моделей за допомогою Tidymodels
+
+```{r reg_versions}
+linear_reg() %>% 
+  set_engine("lm") %>% 
+  translate()
+
+linear_reg(penalty = 1) %>% 
+  set_engine("glmnet") %>% 
+  translate()
+
+linear_reg() %>% 
+  set_engine("stan") %>% 
+  translate()
+```
+
+```{r lm_reg}
+lm_model <- 
+  linear_reg() %>% 
+  set_engine("lm")
+
+lm_form_fit <- 
+  lm_model %>% 
+  fit(body_mass_g ~ bill_length_mm + bill_depth_mm, data = penguins_train)
+
+lm_xy_fit <- 
+  lm_model %>% 
+  fit_xy(
+    x = penguins_train %>% select(bill_length_mm, bill_depth_mm),
+    y = penguins_train %>% pull(body_mass_g)
+  )
+
+lm_form_fit
+
+lm_xy_fit
+```
+
+```{r extract}
+lm_form_fit %>% 
+  extract_fit_engine()
+
+lm_form_fit %>% 
+  extract_fit_engine() %>% 
+  vcov()
+
+model_res <- 
+  lm_form_fit %>% 
+  extract_fit_engine() %>% 
+  summary()
+
+param_est <- coef(model_res)
+
+class(param_est)
+
+param_est
+
+lm_form_fit %>% 
+  tidy()
+
+lm_form_fit %>% 
+  glance()
+```
+
+```{r predict}
+penguins_test_small <- penguins_test %>%
+  slice(1:5)
+
+predict(lm_form_fit, new_data = penguins_test_small)
+
+penguins_test_small %>% 
+  select(body_mass_g) %>% 
+  bind_cols(predict(lm_form_fit, penguins_test_small)) %>% 
+  bind_cols(predict(lm_form_fit, penguins_test_small, type = "pred_int")) 
+```
+
+## Створення робочого процесу для побудови моделей
+
+```{r workflows}
+lm_model <- 
+  linear_reg() %>% 
+  set_engine("lm")
+
+lm_wflow <- 
+  workflow() %>% 
+  add_model(lm_model)
+
+lm_wflow
+
+lm_wflow <- 
+  lm_wflow %>% 
+  add_formula(body_mass_g ~ bill_length_mm + bill_depth_mm)
+
+lm_fit <- fit(lm_wflow, penguins_train)
+
+lm_fit
+
+predict(lm_fit, penguins_train %>% 
+          slice(1:3))
+
+lm_fit %>% 
+  update_formula(body_mass_g ~ bill_length_mm)
+```
+
+
+```{r add_var}
+lm_wflow <- 
+  lm_wflow %>% 
+  remove_formula() %>% 
+  add_variables(outcome = body_mass_g, predictors = c(contains("_")))
+
+lm_wflow
+
+fit(lm_wflow, penguins_train)
+```
+
+```{r mult_workfows}
+formulas <- list(
+  bill_length = body_mass_g ~ bill_length_mm,
+  bill_depth = body_mass_g ~ bill_depth_mm,
+  bill_length_depth = body_mass_g ~ bill_length_mm + bill_depth_mm + sex,
+  flipper = body_mass_g ~ flipper_length_mm
+)
+
+library(workflowsets)
+
+formulas_model <- workflow_set(preproc = formulas, models = list(lm = lm_model))
+
+formulas_model
+
+formulas_model$info[[1]]
+
+extract_workflow(formulas_model, id = "flipper_lm")
+
+formulas_model <-
+   formulas_model %>%
+   mutate(fit = map(info, ~ fit(.x$workflow[[1]], penguins_train)))
+
+formulas_model
+
+formulas_model$fit[[1]]
+```
+
+## Фіча інженірінг
+```{r feature}
+
+penguins_train
+
+simple_penguins <- 
+  recipe(body_mass_g ~ bill_length_mm + bill_depth_mm + sex,
+         data = penguins_train) %>%
+  step_log(bill_depth_mm, base = 10) %>% 
+  step_dummy(all_nominal_predictors())
+
+simple_penguins
+```
+
+```{r recipes}
+# lm_wflow %>% 
+# add_recipe(simple_penguins)
+
+lm_wflow <- 
+  lm_wflow %>% 
+  remove_variables() %>% 
+  add_recipe(simple_penguins)
+
+lm_wflow
+
+lm_fit <- fit(lm_wflow, penguins_train)
+
+predict(lm_fit, penguins_train %>% slice(1:3))
+
+lm_fit %>% 
+  tidy()
+```
+
+```{r other_feature}
+penguins_train %>% 
+  ggplot(aes(sex)) +
+  geom_bar()
+
+simple_penguins <- 
+  recipe(body_mass_g ~ bill_length_mm + bill_depth_mm + sex,
+         data = penguins_train) %>%
+  step_log(bill_depth_mm, base = 10) %>% 
+  step_dummy(all_nominal_predictors()) %>% # one_hot = TRUE
+  step_unknown(sex, new_level = "unknown sex")
+
+# step_novel()
+# step_other(var_name, threshold = 0.01)
+
+simple_penguins
+```
+
+```{r interaction}
+ggplot(penguins_train, aes(x = flipper_length_mm, y = body_mass_g)) + 
+  geom_point() + 
+  facet_wrap(~ species) + 
+  geom_smooth(method = lm, formula = y ~ x, se = FALSE, color = "lightblue") + 
+  scale_x_log10() + 
+  scale_y_log10() + 
+  labs(x = "Довжина плавника", y = "Вага")
+
+# body_mass_g ~ bill_length_mm + bill_depth_mm + flipper_length_mm + sex + flipper_length_mm:sex
+
+# body_mass_g ~ bill_length_mm + bill_depth_mm + flipper_length_mm*sex
+
+simple_penguins <- 
+  recipe(body_mass_g ~ bill_length_mm + bill_depth_mm + flipper_length_mm + sex,
+         data = penguins_train) %>%
+  step_log(bill_depth_mm, base = 10) %>% 
+  step_dummy(all_nominal_predictors()) %>% # one_hot = TRUE
+  step_unknown(sex, new_level = "unknown sex") %>% 
+  step_interact( ~ flipper_length_mm:sex)
+```
+
+```{r nonlinear}
+library(patchwork)
+library(splines)
+
+plot_smoother <- function(deg_free) {
+  ggplot(penguins_train, aes(x = bill_depth_mm, y = body_mass_g)) + 
+    geom_point(alpha = .2) + 
+    scale_y_log10() +
+    geom_smooth(
+      method = lm,
+      formula = y ~ ns(x, df = deg_free),
+      color = "lightblue",
+      se = FALSE
+    ) +
+    labs(title = paste(deg_free, "Spline Terms"),
+         y = "Вага")
+}
+
+( plot_smoother(2) + plot_smoother(5) ) / ( plot_smoother(20) + plot_smoother(30) )
+
+simple_penguins <- 
+  recipe(body_mass_g ~ bill_length_mm + bill_depth_mm + flipper_length_mm + sex,
+         data = penguins_train) %>%
+  step_log(bill_depth_mm, base = 10) %>% 
+  step_dummy(all_nominal_predictors()) %>% # one_hot = TRUE
+  step_unknown(sex, new_level = "unknown sex") %>% 
+  step_interact( ~ flipper_length_mm:sex) %>% 
+  step_ns(bill_depth_mm, deg_free = 5)
+```
+
+```{r add_id}
+tidy(simple_penguins)
+
+simple_penguins <- 
+  recipe(body_mass_g ~ bill_length_mm + bill_depth_mm + flipper_length_mm + sex,
+         data = penguins_train) %>%
+  step_log(bill_depth_mm, base = 10) %>% 
+  step_unknown(sex, new_level = "unknown sex", id = "my_id") # add id
+#  step_dummy(all_nominal_predictors()) %>% # one_hot = TRUE
+#  step_interact( ~ flipper_length_mm:sex) %>% 
+#  step_ns(bill_depth_mm, deg_free = 2)
+
+tidy(simple_penguins)
+
+lm_wflow <- 
+  workflow() %>% 
+  add_model(lm_model) %>% 
+  add_recipe(simple_penguins)
+
+lm_fit <- fit(lm_wflow, penguins_train)
+
+estimated_recipe <- lm_fit %>% 
+  extract_recipe(estimated = TRUE)
+```
+
+
+```{r metrics}
+penguins_test_res <- predict(lm_fit, new_data = penguins_train %>%
+                               select(-body_mass_g))
+
+penguins_test_res
+
+
+penguins_test_res <- bind_cols(penguins_test_res, penguins_train %>%
+                                 select(body_mass_g))
+
+penguins_test_res
+
+ggplot(penguins_test_res, aes(x = body_mass_g, y = .pred)) + 
+  # Create a diagonal line:
+  geom_abline(lty = 2) + 
+  geom_point(alpha = 0.5) + 
+  labs(y = "Predicted Body Mass", x = "Body Mass") +
+  # Scale and size the x- and y-axis uniformly:
+  coord_obs_pred()
+
+rmse(penguins_test_res, truth = body_mass_g, estimate = .pred)
+
+penguins_metrics <- metric_set(rmse, rsq, mae)
+penguins_metrics(penguins_test_res, truth = body_mass_g, estimate = .pred)
+```
+
+
+
