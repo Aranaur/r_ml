@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title> 2 Лінійна регресія | Машинне навчання</title>
+<meta name="author" content="Ігор Мірошниченко">
+<meta name="description" content="Модель лінійної регресії: \[\hat{y} = \beta_0 + \sum \beta_j x_j\] \(\beta_0\) - вільний коефіцієнт (bias, intercept) \(\beta_j\) - ваговий коефіцієнт (weights) \(\beta_0, \beta_1, \dots,...">
+<meta name="generator" content="bookdown 0.24.4 with bs4_book()">
+<meta property="og:title" content=" 2 Лінійна регресія | Машинне навчання">
+<meta property="og:type" content="book">
+<meta property="og:description" content="Модель лінійної регресії: \[\hat{y} = \beta_0 + \sum \beta_j x_j\] \(\beta_0\) - вільний коефіцієнт (bias, intercept) \(\beta_j\) - ваговий коефіцієнт (weights) \(\beta_0, \beta_1, \dots,...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content=" 2 Лінійна регресія | Машинне навчання">
+<meta name="twitter:description" content="Модель лінійної регресії: \[\hat{y} = \beta_0 + \sum \beta_j x_j\] \(\beta_0\) - вільний коефіцієнт (bias, intercept) \(\beta_j\) - ваговий коефіцієнт (weights) \(\beta_0, \beta_1, \dots,...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.12/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.3.1/transition.js"></script><script src="libs/bs3compat-0.3.1/tabs.js"></script><script src="libs/bs3compat-0.3.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Машинне навчання</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Машинне навчання</a></li>
+<li><a class="" href="tidymodels.html"><span class="header-section-number">1</span> Tidymodels</a></li>
+<li><a class="active" href="reg.html"><span class="header-section-number">2</span> Лінійна регресія</a></li>
+<li><a class="" href="classification.html"><span class="header-section-number">3</span> Класифікація</a></li>
+<li><a class="" href="references.html">Література</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/aranaur/r_ml">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="reg" class="section level1" number="2">
+<h1>
+<span class="header-section-number"> 2</span> Лінійна регресія<a class="anchor" aria-label="anchor" href="#reg"><i class="fas fa-link"></i></a>
+</h1>
+<p>Модель лінійної регресії:
+<span class="math display">\[\hat{y} = \beta_0 + \sum \beta_j x_j\]</span>
+<span class="math inline">\(\beta_0\)</span> - вільний коефіцієнт (<em>bias, intercept</em>)</p>
+<p><span class="math inline">\(\beta_j\)</span> - ваговий коефіцієнт (<em>weights</em>)</p>
+<p><span class="math inline">\(\beta_0, \beta_1, \dots, \beta_n\)</span> - параметри</p>
+<p>Інколи можуть скорочувати запис формули:
+<span class="math display">\[\hat{y} = \beta_0 + \left \langle \beta, x \right \rangle\]</span></p>
+$$=
+<span class="math display">\[\begin{pmatrix}
+\beta_1 \\ 
+\beta_2 \\ 
+\dots \\ 
+\beta_n
+
+\end{pmatrix}\]</span>
+<p>$$</p>
+$$x =
+<span class="math display">\[\begin{pmatrix}
+x_1 \\ 
+x_2 \\ 
+\dots \\ 
+x_n
+
+\end{pmatrix}\]</span>
+<p>$$</p>
+<div id="коли-такі-моделі-можна-використовувати" class="section level2" number="2.1">
+<h2>
+<span class="header-section-number">2.1</span> Коли такі моделі можна використовувати?<a class="anchor" aria-label="anchor" href="#%D0%BA%D0%BE%D0%BB%D0%B8-%D1%82%D0%B0%D0%BA%D1%96-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%96-%D0%BC%D0%BE%D0%B6%D0%BD%D0%B0-%D0%B2%D0%B8%D0%BA%D0%BE%D1%80%D0%B8%D1%81%D1%82%D0%BE%D0%B2%D1%83%D0%B2%D0%B0%D1%82%D0%B8"><i class="fas fa-link"></i></a>
+</h2>
+<div id="номінативні-показники-one-hot-encoding" class="section level3" number="2.1.1">
+<h3>
+<span class="header-section-number">2.1.1</span> Номінативні показники: one-hot encoding<a class="anchor" aria-label="anchor" href="#%D0%BD%D0%BE%D0%BC%D1%96%D0%BD%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%96-%D0%BF%D0%BE%D0%BA%D0%B0%D0%B7%D0%BD%D0%B8%D0%BA%D0%B8-one-hot-encoding"><i class="fas fa-link"></i></a>
+</h3>
+<p>Припустимо, що один з наших показників <span class="math inline">\(x_j\)</span> номінативний і він приймає значення з певної множини значень <span class="math inline">\(x_j \in \left \{ c_1, c_2, \dots, c_m \right \}\)</span></p>
+<p>Основна мета one-hot encoding створити нові бінарні змінні з якими модель регресії зможе працювати:</p>
+<p><span class="math inline">\(b_i(x) = \left [ f_i(x) = c_i \right ]\)</span></p>
+<p>Нотація Айверсона:
+<span class="math display">\[\left [ \models  \right ] = 1\]</span>
+<span class="math display">\[\left [ ⊭  \right ] = 0\]</span></p>
+<p><span class="math inline">\(b_1(x), b_2(x), \dots, b_m(x)\)</span> - нові показники.</p>
+<p>Як в такому випадку буде виглядати модель?</p>
+<p><span class="math display">\[\hat{y} = \beta_0 + \beta_1\left [ b(x) = c_1 \right ] + \dots + \beta_m\left [ b(x) = c_m \right ] + \dots\]</span></p>
+</div>
+<div id="бінаризація" class="section level3" number="2.1.2">
+<h3>
+<span class="header-section-number">2.1.2</span> Бінаризація<a class="anchor" aria-label="anchor" href="#%D0%B1%D1%96%D0%BD%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D1%96%D1%8F"><i class="fas fa-link"></i></a>
+</h3>
+<p>В випадках, коли в нас існує нелінійна залежність між <span class="math inline">\(y\)</span> та <span class="math inline">\(x\)</span> є сенс використати бінеризацію.
+<img src="r_ml_files/figure-html/unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p>Будуємо певну сітку значень <span class="math inline">\({t_1, t_2, \dots, t_m}\)</span>, тоді нові показники задамо як:</p>
+<p><span class="math display">\[b_i(x) = [t_{i-1} &lt; x_j \leqslant t_{i}], \;\; i = 1,\dots,m+1\]</span>
+<img src="r_ml_files/figure-html/unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p>Лінійна модель набуває вигляду:
+<span class="math display">\[\hat{y} = \beta_1\left [ t_{i-1} &lt; x_j \leqslant t_{i} \right ] + \dots + \beta_m\left [ t_{m} &lt; x_j \leqslant t_{m+1} \right ] + \dots\]</span>
+Межі інтервалів можна подавати, як перцентилі.</p>
+</div>
+<div id="текстові-дані-bag-of-words" class="section level3" number="2.1.3">
+<h3>
+<span class="header-section-number">2.1.3</span> Текстові дані: bag of words<a class="anchor" aria-label="anchor" href="#%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%BE%D0%B2%D1%96-%D0%B4%D0%B0%D0%BD%D1%96-bag-of-words"><i class="fas fa-link"></i></a>
+</h3>
+</div>
+</div>
+<div id="похибки-в-задачах-регресії" class="section level2" number="2.2">
+<h2>
+<span class="header-section-number">2.2</span> Похибки в задачах регресії<a class="anchor" aria-label="anchor" href="#%D0%BF%D0%BE%D1%85%D0%B8%D0%B1%D0%BA%D0%B8-%D0%B2-%D0%B7%D0%B0%D0%B4%D0%B0%D1%87%D0%B0%D1%85-%D1%80%D0%B5%D0%B3%D1%80%D0%B5%D1%81%D1%96%D1%97"><i class="fas fa-link"></i></a>
+</h2>
+<p><span class="math display">\[L(y, \hat{y})\]</span>
+### Квадратична функція похибок
+<span class="math display">\[L(y, \hat{y}) = (y - \hat{y})^2\]</span></p>
+<p><span class="math display">\[MSE(\hat{y}, x) = \frac{1}{l}\sum(y - \hat{y}(x))^2\]</span></p>
+<p><span class="math display">\[RMSE(\hat{y}, x) = \sqrt{\frac{1}{l}\sum(y - \hat{y}(x))^2}\]</span>
+<span class="math display">\[R^2(\hat{y}, x) = 1 - \frac{\sum(y - \hat{y})^2}{\sum(y - \overline{y})^2}\]</span></p>
+<div id="абсолютна-функція-похибок" class="section level3" number="2.2.1">
+<h3>
+<span class="header-section-number">2.2.1</span> Абсолютна функція похибок<a class="anchor" aria-label="anchor" href="#%D0%B0%D0%B1%D1%81%D0%BE%D0%BB%D1%8E%D1%82%D0%BD%D0%B0-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D1%96%D1%8F-%D0%BF%D0%BE%D1%85%D0%B8%D0%B1%D0%BE%D0%BA"><i class="fas fa-link"></i></a>
+</h3>
+<p><span class="math display">\[L(y, \hat{y}) = |y - \hat{y}|\]</span></p>
+<p><span class="math display">\[MAE(\hat{y}, x) = \frac{1}{l}\sum|y - \hat{y}|\]</span>
+Позитивні сторони: стійка до викидів</p>
+<div class="inline-table"><table class="table table-sm">
+<thead><tr class="header">
+<th align="right">y</th>
+<th align="right">fit_1</th>
+<th align="right">fit_2</th>
+<th align="right">abs_1</th>
+<th align="right">sqr_1</th>
+<th align="right">abs_2</th>
+<th align="right">sqr_2</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">6</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">5</td>
+<td align="right">7</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">6</td>
+<td align="right">8</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="right">7</td>
+<td align="right">10</td>
+<td align="right">93</td>
+<td align="right">8649</td>
+<td align="right">90</td>
+<td align="right">8100</td>
+</tr>
+<tr class="odd">
+<td align="right">7</td>
+<td align="right">6</td>
+<td align="right">10</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">9</td>
+</tr>
+</tbody>
+</table></div>
+<div class="inline-table"><table class="table table-sm">
+<thead><tr class="header">
+<th align="left"></th>
+<th align="right">x</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">abs_1</td>
+<td align="right">14.14286</td>
+</tr>
+<tr class="even">
+<td align="left">sqr_1</td>
+<td align="right">1236.42857</td>
+</tr>
+<tr class="odd">
+<td align="left">abs_2</td>
+<td align="right">15.42857</td>
+</tr>
+<tr class="even">
+<td align="left">sqr_2</td>
+<td align="right">1164.85714</td>
+</tr>
+</tbody>
+</table></div>
+<p>Негативні сторони: похідна не має інформації про близькість екстремуму + не має похідної в нулі.</p>
+</div>
+<div id="huber-loss" class="section level3" number="2.2.2">
+<h3>
+<span class="header-section-number">2.2.2</span> Huber loss<a class="anchor" aria-label="anchor" href="#huber-loss"><i class="fas fa-link"></i></a>
+</h3>
+<p>Поєднання квадратичної та абсолютної функції. Необхідно підбирати дельту. Не має другої похідної.
+<span class="math display">\[
+L_{\delta}(y, \hat{y})\left\{\begin{matrix}
+\frac{1}{2}(y - \hat{y})^2, &amp; |y - \hat{y}| &lt;  \delta \\ 
+\delta (|y - \hat{y}| - \frac{1}{2}\delta) &amp; |y - \hat{y}| \geqslant   \delta   
+\end{matrix}\right.
+\]</span></p>
+</div>
+<div id="log-cosh" class="section level3" number="2.2.3">
+<h3>
+<span class="header-section-number">2.2.3</span> Log-Cosh<a class="anchor" aria-label="anchor" href="#log-cosh"><i class="fas fa-link"></i></a>
+</h3>
+<p>Використовується гіперболічний косинус
+<span class="math display">\[
+L_{\delta}(y, \hat{y}) = log (cosh(y - \hat{y}))
+\]</span></p>
+</div>
+<div id="msle" class="section level3" number="2.2.4">
+<h3>
+<span class="header-section-number">2.2.4</span> MSLE<a class="anchor" aria-label="anchor" href="#msle"><i class="fas fa-link"></i></a>
+</h3>
+<p>Mean squared logarithmic error
+<span class="math display">\[
+L(y, \hat{y}) = (log(\hat{y} + 1) - log(y + 1))^2
+\]</span></p>
+</div>
+<div id="відносні-функції-помилок" class="section level3" number="2.2.5">
+<h3>
+<span class="header-section-number">2.2.5</span> Відносні функції помилок<a class="anchor" aria-label="anchor" href="#%D0%B2%D1%96%D0%B4%D0%BD%D0%BE%D1%81%D0%BD%D1%96-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D1%96%D1%97-%D0%BF%D0%BE%D0%BC%D0%B8%D0%BB%D0%BE%D0%BA"><i class="fas fa-link"></i></a>
+</h3>
+<div id="mape" class="section level4" number="2.2.5.1">
+<h4>
+<span class="header-section-number">2.2.5.1</span> MAPE<a class="anchor" aria-label="anchor" href="#mape"><i class="fas fa-link"></i></a>
+</h4>
+<p><span class="math display">\[
+L_{\delta}(y, \hat{y}) = |\frac{y - \hat{y}}{y}|
+\]</span></p>
+</div>
+<div id="smape" class="section level4" number="2.2.5.2">
+<h4>
+<span class="header-section-number">2.2.5.2</span> SMAPE<a class="anchor" aria-label="anchor" href="#smape"><i class="fas fa-link"></i></a>
+</h4>
+<p><span class="math display">\[
+L_{\delta}(y, \hat{y}) = \frac{|y - \hat{y}|}{(|y| + |\hat{y}|)/2}
+\]</span></p>
+</div>
+</div>
+<div id="квантильна-функції" class="section level3" number="2.2.6">
+<h3>
+<span class="header-section-number">2.2.6</span> Квантильна функції<a class="anchor" aria-label="anchor" href="#%D0%BA%D0%B2%D0%B0%D0%BD%D1%82%D0%B8%D0%BB%D1%8C%D0%BD%D0%B0-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D1%96%D1%97"><i class="fas fa-link"></i></a>
+</h3>
+<p>Можна регулювати штраф за завищення і заниження похибок</p>
+<p>Функцію помилок потрібно підбирати в залежності від задачі.</p>
+
+</div>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="tidymodels.html"><span class="header-section-number">1</span> Tidymodels</a></div>
+<div class="next"><a href="classification.html"><span class="header-section-number">3</span> Класифікація</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#reg"><span class="header-section-number">2</span> Лінійна регресія</a></li>
+<li>
+<a class="nav-link" href="#%D0%BA%D0%BE%D0%BB%D0%B8-%D1%82%D0%B0%D0%BA%D1%96-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%96-%D0%BC%D0%BE%D0%B6%D0%BD%D0%B0-%D0%B2%D0%B8%D0%BA%D0%BE%D1%80%D0%B8%D1%81%D1%82%D0%BE%D0%B2%D1%83%D0%B2%D0%B0%D1%82%D0%B8"><span class="header-section-number">2.1</span> Коли такі моделі можна використовувати?</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%D0%BD%D0%BE%D0%BC%D1%96%D0%BD%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%96-%D0%BF%D0%BE%D0%BA%D0%B0%D0%B7%D0%BD%D0%B8%D0%BA%D0%B8-one-hot-encoding"><span class="header-section-number">2.1.1</span> Номінативні показники: one-hot encoding</a></li>
+<li><a class="nav-link" href="#%D0%B1%D1%96%D0%BD%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D1%96%D1%8F"><span class="header-section-number">2.1.2</span> Бінаризація</a></li>
+<li><a class="nav-link" href="#%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%BE%D0%B2%D1%96-%D0%B4%D0%B0%D0%BD%D1%96-bag-of-words"><span class="header-section-number">2.1.3</span> Текстові дані: bag of words</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#%D0%BF%D0%BE%D1%85%D0%B8%D0%B1%D0%BA%D0%B8-%D0%B2-%D0%B7%D0%B0%D0%B4%D0%B0%D1%87%D0%B0%D1%85-%D1%80%D0%B5%D0%B3%D1%80%D0%B5%D1%81%D1%96%D1%97"><span class="header-section-number">2.2</span> Похибки в задачах регресії</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%D0%B0%D0%B1%D1%81%D0%BE%D0%BB%D1%8E%D1%82%D0%BD%D0%B0-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D1%96%D1%8F-%D0%BF%D0%BE%D1%85%D0%B8%D0%B1%D0%BE%D0%BA"><span class="header-section-number">2.2.1</span> Абсолютна функція похибок</a></li>
+<li><a class="nav-link" href="#huber-loss"><span class="header-section-number">2.2.2</span> Huber loss</a></li>
+<li><a class="nav-link" href="#log-cosh"><span class="header-section-number">2.2.3</span> Log-Cosh</a></li>
+<li><a class="nav-link" href="#msle"><span class="header-section-number">2.2.4</span> MSLE</a></li>
+<li><a class="nav-link" href="#%D0%B2%D1%96%D0%B4%D0%BD%D0%BE%D1%81%D0%BD%D1%96-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D1%96%D1%97-%D0%BF%D0%BE%D0%BC%D0%B8%D0%BB%D0%BE%D0%BA"><span class="header-section-number">2.2.5</span> Відносні функції помилок</a></li>
+<li><a class="nav-link" href="#%D0%BA%D0%B2%D0%B0%D0%BD%D1%82%D0%B8%D0%BB%D1%8C%D0%BD%D0%B0-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D1%96%D1%97"><span class="header-section-number">2.2.6</span> Квантильна функції</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/aranaur/r_ml/blob/master/02-regression.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/aranaur/r_ml/edit/master/02-regression.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Машинне навчання</strong>" was written by Ігор Мірошниченко. It was last built on 2022-04-07.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>

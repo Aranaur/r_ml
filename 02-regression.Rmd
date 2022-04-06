@@ -1,0 +1,186 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r purl = FALSE, cache = TRUE, include=FALSE}
+knitr::opts_knit$set(global.par = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, collapse = TRUE, out.width = '100%')
+library(tidyverse)
+library(vroom)
+```
+
+# Лінійна регресія {#reg}
+Модель лінійної регресії:
+$$\hat{y} = \beta_0 + \sum \beta_j x_j$$
+$\beta_0$ - вільний коефіцієнт (*bias, intercept*)
+
+$\beta_j$ - ваговий коефіцієнт (*weights*)
+
+$\beta_0,  \beta_1,  \dots, \beta_n$ - параметри
+
+Інколи можуть скорочувати запис формули:
+$$\hat{y} = \beta_0 + \left \langle \beta, x \right \rangle$$
+
+$$\beta = \begin{pmatrix}
+\beta_1 \\ 
+\beta_2 \\ 
+\dots \\ 
+\beta_n
+
+\end{pmatrix}$$
+
+$$x = \begin{pmatrix}
+x_1 \\ 
+x_2 \\ 
+\dots \\ 
+x_n
+
+\end{pmatrix}$$
+
+## Коли такі моделі можна використовувати?
+
+### Номінативні показники: one-hot encoding
+
+Припустимо, що один з наших показників $x_j$ номінативний і він приймає значення з певної множини значень $x_j \in \left \{ c_1, c_2, \dots, c_m \right \}$
+
+Основна мета one-hot encoding створити нові бінарні змінні з якими модель регресії зможе працювати:
+
+$b_i(x) = \left [ f_i(x) = c_i \right ]$
+
+Нотація Айверсона:
+$$\left [ \models  \right ] = 1$$
+$$\left [ ⊭  \right ] = 0$$
+
+$b_1(x), b_2(x), \dots, b_m(x)$ - нові показники.
+
+Як в такому випадку буде виглядати модель?
+
+$$\hat{y} = \beta_0 + \beta_1\left [ b(x) = c_1 \right ] + \dots + \beta_m\left [ b(x) = c_m \right ] + \dots$$
+
+### Бінаризація
+В випадках, коли в нас існує нелінійна залежність між $y$ та $x$ є сенс використати бінеризацію.
+```{r echo=FALSE}
+tribble(~x, ~y,
+        1, 2,
+        2, 4,
+        3, 8,
+        4, 12,
+        5, 11,
+        6, 9,
+        7, 8,
+        8, 6,
+        9, 5.5,
+        10, 5) %>% 
+  ggplot(aes(x, y)) +
+  geom_smooth(se = FALSE)
+```
+
+Будуємо певну сітку значень ${t_1, t_2, \dots, t_m}$, тоді нові показники задамо як:
+
+$$b_i(x) = [t_{i-1} < x_j \leqslant t_{i}], \;\; i = 1,\dots,m+1$$
+```{r echo=FALSE}
+tribble(~x, ~y,
+        1, 2,
+        2, 4,
+        3, 8,
+        4, 12,
+        5, 11,
+        6, 9,
+        7, 8,
+        8, 6,
+        9, 5.5,
+        10, 5) %>% 
+  ggplot(aes(x, y)) +
+  geom_smooth(se = FALSE) +
+  geom_vline(xintercept = seq(1, 10, length.out = 12), color = "red")
+```
+
+Лінійна модель набуває вигляду:
+$$\hat{y} = \beta_1\left [ t_{i-1} < x_j \leqslant t_{i} \right ] + \dots + \beta_m\left [ t_{m} < x_j \leqslant t_{m+1} \right ] + \dots$$
+Межі інтервалів можна подавати, як перцентилі.
+
+### Текстові дані: bag of words
+
+## Похибки в задачах регресії
+$$L(y, \hat{y})$$
+### Квадратична функція похибок
+$$L(y, \hat{y}) = (y - \hat{y})^2$$
+
+$$MSE(\hat{y}, x) = \frac{1}{l}\sum(y - \hat{y}(x))^2$$
+
+$$RMSE(\hat{y}, x) = \sqrt{\frac{1}{l}\sum(y - \hat{y}(x))^2}$$
+$$R^2(\hat{y}, x) = 1 - \frac{\sum(y - \hat{y})^2}{\sum(y - \overline{y})^2}$$
+
+### Абсолютна функція похибок
+$$L(y, \hat{y}) = |y - \hat{y}|$$
+
+$$MAE(\hat{y}, x) = \frac{1}{l}\sum|y - \hat{y}|$$
+Позитивні сторони: стійка до викидів
+```{r echo=FALSE}
+tibble(
+  y = c(1, 2, 3, 4, 5, 100, 7),
+  fit_1 = c(2, 1, 2, 5, 6, 7, 6),
+  fit_2 = c(4, 5, 6, 7, 8, 10, 10)
+) %>% 
+  mutate(abs_1 = abs(y - fit_1), 
+         sqr_1 = (y - fit_1)^2,
+         abs_2 = abs(y - fit_2), 
+         sqr_2 = (y - fit_2)^2) %>% 
+  knitr::kable()
+```
+
+```{r echo=FALSE}
+tibble(
+  y = c(1, 2, 3, 4, 5, 100, 7),
+  fit_1 = c(2, 1, 2, 5, 6, 7, 6),
+  fit_2 = c(4, 5, 6, 7, 8, 10, 10)
+) %>% 
+  mutate(abs_1 = abs(y - fit_1), 
+         sqr_1 = (y - fit_1)^2,
+         abs_2 = abs(y - fit_2), 
+         sqr_2 = (y - fit_2)^2) %>% 
+  select(4:7) %>% 
+  map_dbl(mean) %>% 
+  knitr::kable()
+```
+
+Негативні сторони: похідна не має інформації про близькість екстремуму + не має похідної в нулі.
+
+### Huber loss
+Поєднання квадратичної та абсолютної функції. Необхідно підбирати дельту. Не має другої похідної.
+$$
+L_{\delta}(y, \hat{y})\left\{\begin{matrix}
+\frac{1}{2}(y - \hat{y})^2, & |y - \hat{y}| <  \delta \\ 
+\delta (|y - \hat{y}| - \frac{1}{2}\delta) & |y - \hat{y}| \geqslant   \delta   
+\end{matrix}\right.
+$$
+
+### Log-Cosh
+Використовується гіперболічний косинус
+$$
+L_{\delta}(y, \hat{y}) = log (cosh(y - \hat{y}))
+$$
+
+### MSLE
+Mean squared logarithmic error
+$$
+L(y, \hat{y}) = (log(\hat{y} + 1) - log(y + 1))^2
+$$
+
+### Відносні функції помилок
+
+#### MAPE
+$$
+L_{\delta}(y, \hat{y}) = |\frac{y - \hat{y}}{y}|
+$$
+
+#### SMAPE
+$$
+L_{\delta}(y, \hat{y}) = \frac{|y - \hat{y}|}{(|y| + |\hat{y}|)/2}
+$$
+
+### Квантильна функції
+Можна регулювати штраф за завищення і заниження похибок
+
+Функцію помилок потрібно підбирати в залежності від задачі.
