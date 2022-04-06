@@ -45,6 +45,7 @@ penguins_train <- training(penguins_split)
 penguins_test  <-  testing(penguins_split)
 
 dim(penguins_train)
+
 ```
 
 
@@ -60,6 +61,12 @@ penguins_train <- training(penguins_split)
 penguins_test  <-  testing(penguins_split)
 
 dim(penguins_train)
+
+penguins_train %>% 
+  count(sex)
+
+penguins_test %>% 
+  count(sex)
 ```
 
 ## Побудова моделей за допомогою Tidymodels
