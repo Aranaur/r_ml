@@ -17,4 +17,5 @@ msle
 mape
 smape
 квантильна-функції
+перенавчання
 classification

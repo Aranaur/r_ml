@@ -7,14 +7,14 @@
 <title> 2 Лінійна регресія | Машинне навчання</title>
 <meta name="author" content="Ігор Мірошниченко">
 <meta name="description" content="Модель лінійної регресії: \[\hat{y} = \beta_0 + \sum \beta_j x_j\] \(\beta_0\) - вільний коефіцієнт (bias, intercept) \(\beta_j\) - ваговий коефіцієнт (weights) \(\beta_0, \beta_1, \dots,...">
-<meta name="generator" content="bookdown 0.24.4 with bs4_book()">
+<meta name="generator" content="bookdown 0.26 with bs4_book()">
 <meta property="og:title" content=" 2 Лінійна регресія | Машинне навчання">
 <meta property="og:type" content="book">
 <meta property="og:description" content="Модель лінійної регресії: \[\hat{y} = \beta_0 + \sum \beta_j x_j\] \(\beta_0\) - вільний коефіцієнт (bias, intercept) \(\beta_j\) - ваговий коефіцієнт (weights) \(\beta_0, \beta_1, \dots,...">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content=" 2 Лінійна регресія | Машинне навчання">
 <meta name="twitter:description" content="Модель лінійної регресії: \[\hat{y} = \beta_0 + \sum \beta_j x_j\] \(\beta_0\) - вільний коефіцієнт (bias, intercept) \(\beta_j\) - ваговий коефіцієнт (weights) \(\beta_0, \beta_1, \dots,...">
-<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.12/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
 <script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.3.1/transition.js"></script><script src="libs/bs3compat-0.3.1/tabs.js"></script><script src="libs/bs3compat-0.3.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><link rel="stylesheet" href="style.css">
@@ -37,7 +37,7 @@
         <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
 </form>
 
-      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+      <nav aria-label="Table of contents"><h2>Зміст</h2>
         <ul class="book-toc list-unstyled">
 <li><a class="" href="index.html">Машинне навчання</a></li>
 <li><a class="" href="tidymodels.html"><span class="header-section-number">1</span> Tidymodels</a></li>
@@ -47,7 +47,7 @@
 </ul>
 
         <div class="book-extra">
-          <p><a id="book-repo" href="https://github.com/aranaur/r_ml">View book source <i class="fab fa-github"></i></a></p>
+          <p><a id="book-repo" href="https://github.com/aranaur/r_ml">Переглянути код <i class="fab fa-github"></i></a></p>
         </div>
       </nav>
 </div>
@@ -293,15 +293,42 @@ L_{\delta}(y, \hat{y}) = \frac{|y - \hat{y}|}{(|y| + |\hat{y}|)/2}
 </h3>
 <p>Можна регулювати штраф за завищення і заниження похибок</p>
 <p>Функцію помилок потрібно підбирати в залежності від задачі.</p>
-
 </div>
+</div>
+<div id="перенавчання" class="section level2" number="2.3">
+<h2>
+<span class="header-section-number">2.3</span> Перенавчання<a class="anchor" aria-label="anchor" href="#%D0%BF%D0%B5%D1%80%D0%B5%D0%BD%D0%B0%D0%B2%D1%87%D0%B0%D0%BD%D0%BD%D1%8F"><i class="fas fa-link"></i></a>
+</h2>
+<p>Нерідко в моделі машинного навчання стикаються з ситуацією <em>перенавчання</em> — якість моделі на нових даних значно гірша ніж на навчальній вибірці. Тому важливо щоб наша модель вміла <em>узагалювати</em> свої результати на нові дані.</p>
+<p>Для візуалізації цього ефекту проведемо симуляцію:</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com">patchwork</a></span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
+
+<span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">0.05</span><span class="op">)</span>,
+             y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">cos</a></span><span class="op">(</span><span class="fl">1.5</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">15</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">{</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
+    <span class="co"># geom_smooth(se = FALSE, color = "#2F6B57") + </span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"lm"</span>, formula <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/stats/poly.html">poly</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">d</span><span class="op">)</span>, se <span class="op">=</span> <span class="cn">FALSE</span>, color <span class="op">=</span> <span class="st">"#2F6B57"</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Poly "</span>, <span class="va">d</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+
+<span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">+</span> <span class="va">plots</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">+</span> <span class="va">plots</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span></code></pre></div>
+<div class="inline-figure"><img src="r_ml_files/figure-html/sim-1.png" width="100%" style="display: block; margin: auto;"></div>
+<p>bookdown::render_book(“index.Rmd,” output_dir = “docs”)</p>
+
 </div>
 </div>
   <div class="chapter-nav">
 <div class="prev"><a href="tidymodels.html"><span class="header-section-number">1</span> Tidymodels</a></div>
 <div class="next"><a href="classification.html"><span class="header-section-number">3</span> Класифікація</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
-    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>На цій сторінці</h2>
       <ul class="nav navbar-nav">
 <li><a class="nav-link" href="#reg"><span class="header-section-number">2</span> Лінійна регресія</a></li>
 <li>
@@ -321,12 +348,13 @@ L_{\delta}(y, \hat{y}) = \frac{|y - \hat{y}|}{(|y| + |\hat{y}|)/2}
 <li><a class="nav-link" href="#%D0%BA%D0%B2%D0%B0%D0%BD%D1%82%D0%B8%D0%BB%D1%8C%D0%BD%D0%B0-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D1%96%D1%97"><span class="header-section-number">2.2.6</span> Квантильна функції</a></li>
 </ul>
 </li>
+<li><a class="nav-link" href="#%D0%BF%D0%B5%D1%80%D0%B5%D0%BD%D0%B0%D0%B2%D1%87%D0%B0%D0%BD%D0%BD%D1%8F"><span class="header-section-number">2.3</span> Перенавчання</a></li>
 </ul>
 
       <div class="book-extra">
         <ul class="list-unstyled">
-<li><a id="book-source" href="https://github.com/aranaur/r_ml/blob/master/02-regression.Rmd">View source <i class="fab fa-github"></i></a></li>
-          <li><a id="book-edit" href="https://github.com/aranaur/r_ml/edit/master/02-regression.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+<li><a id="book-source" href="https://github.com/aranaur/r_ml/blob/master/02-regression.Rmd">Переглянути код <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/aranaur/r_ml/edit/master/02-regression.Rmd">Редагувати <i class="fab fa-github"></i></a></li>
         </ul>
 </div>
     </nav>
@@ -338,11 +366,11 @@ L_{\delta}(y, \hat{y}) = \frac{|y - \hat{y}|}{(|y| + |\hat{y}|)/2}
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Машинне навчання</strong>" was written by Ігор Мірошниченко. It was last built on 2022-04-07.</p>
+    <p>"<strong>Машинне навчання</strong>", автор Ігор Мірошниченко. <br>Останні зміни: 2022-04-28.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
-    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+    <p>Книгу створено за допомогою пакету <a class="text-light" href="https://bookdown.org">bookdown</a>.</p>
   </div>
 
 </div></div>
