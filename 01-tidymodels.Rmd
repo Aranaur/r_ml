@@ -1,4 +1,4 @@
-```{r echo = FALSE, purl = FALSE, cache = FALSE, include=FALSE}
+```{r echo = FALSE, purl = FALSE, cache = TRUE, include=FALSE}
 knitr::opts_knit$set(global.par = TRUE)
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, collapse = TRUE, out.width = '100%', fig.align='center')
 library(tidyverse)
@@ -340,7 +340,7 @@ estimated_recipe <- lm_fit %>%
 ```
 
 
-```{r metrics}
+```{r metrics, eval = FALSE}
 penguins_test_res <- predict(lm_fit, new_data = penguins_train %>%
                                select(-body_mass_g))
 

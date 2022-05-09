@@ -231,6 +231,38 @@ $$CV = \frac{1}{k}\sum{Q(\hat{y_i}, X_i)}$$
 - Навчаємо модель на всій вибірці даних, її параметри будуть підібрані на більшій кількості спостережень і можемо сподіватися, що якість моделі зросте.
 
 - Будуємо композицію моделі з $\hat{y_1},\dots,\hat{y_k}$: наприклад, усереднення прогнозів всіх моделей, що може привести до підвищення стійкості моделі.
+```{r}
+library(tidymodels)
+library(performance)
+
+set.seed(1234)
+
+split <- initial_split(mtcars, prop = 0.8)
+split
+
+cars_train <- training(split)
+cars_test <- testing(split)
+
+cars_train
+cars_test
+```
+
+```{r}
+lm_spec <- linear_reg() %>%
+  set_mode("regression") %>%
+  set_engine("lm")
+
+lm_fit <- lm_spec %>% 
+  fit(mpg ~ ., data = cars_train)
+
+lm_fit %>%
+  check_model()
+
+lm_fit %>% 
+  extract_fit_engine() %>%
+  check_heteroscedasticity()
+```
+
 
 ## Градієнтний спуск
 Пізніше...
@@ -239,18 +271,39 @@ $$CV = \frac{1}{k}\sum{Q(\hat{y_i}, X_i)}$$
 ```{r}
 fm0 <- lm(dist ~ speed, cars)
 X <- model.matrix(fm0)
-f <- function(b) with(cars, sum(log(cosh(dist - X %*% b))))
-res <- optim(coef(fm0), f, method = "BFGS")
+f1 <- function(b) with(cars, sum(log(cosh(dist - X %*% b))))
+res <- optim(coef(fm0), f1, method = "BFGS")
 res$par
 
-f <- function(b) with(cars, mean(abs((dist - X %*% b))))
-res <- optim(c(100, 100), f, method = "L-BFGS-B")
+f2 <- function(b) with(cars, mean(abs((dist - X %*% b))))
+res <- optim(coef(fm0), f2, method = "BFGS")
 res$par
 ```
 
 
+```{r}
+f1 <- function(b) with(cars, sum(log(cosh(dist - X %*% b))))
+f2 <- function(b) with(cars, mean(abs((dist - X %*% b))))
+func <- list(f1, f2)
+fm0 <- lm(dist ~ speed, cars)
+X <- model.matrix(fm0)
+param <- 0
 
+for (i in 1:length(func)) {
+  param[i] <- tibble(optim(coef(fm0), func[[i]], method = "BFGS")$par)
+}
 
+param <- param %>% 
+  bind_rows() %>% 
+  rename(Intercept = 1) %>% 
+  mutate(loss = c("Log-Cosh", "MAE"))
+
+cars %>% 
+  ggplot(aes(speed, dist)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_abline(data = param, aes(intercept = Intercept, slope = speed, color = loss))
+```
 
 bookdown::render_book("index.Rmd", output_dir = "docs")
 

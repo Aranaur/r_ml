@@ -65,29 +65,29 @@
 
 <span class="va">penguins</span>
 <span class="co">## # A tibble: 344 x 8</span>
-<span class="co">##    species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g</span>
-<span class="co">##    &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;</span>
-<span class="co">##  1 Adelie  Torgersen           39.1          18.7               181        3750</span>
-<span class="co">##  2 Adelie  Torgersen           39.5          17.4               186        3800</span>
-<span class="co">##  3 Adelie  Torgersen           40.3          18                 195        3250</span>
-<span class="co">##  4 Adelie  Torgersen           NA            NA                  NA          NA</span>
-<span class="co">##  5 Adelie  Torgersen           36.7          19.3               193        3450</span>
-<span class="co">##  6 Adelie  Torgersen           39.3          20.6               190        3650</span>
-<span class="co">##  7 Adelie  Torgersen           38.9          17.8               181        3625</span>
-<span class="co">##  8 Adelie  Torgersen           39.2          19.6               195        4675</span>
-<span class="co">##  9 Adelie  Torgersen           34.1          18.1               193        3475</span>
-<span class="co">## 10 Adelie  Torgersen           42            20.2               190        4250</span>
+<span class="co">##    body_mass_g species island    bill_length_mm bill_depth_mm flipper_length_mm</span>
+<span class="co">##          &lt;int&gt; &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;</span>
+<span class="co">##  1        3750 Adelie  Torgersen           39.1          18.7               181</span>
+<span class="co">##  2        3800 Adelie  Torgersen           39.5          17.4               186</span>
+<span class="co">##  3        3250 Adelie  Torgersen           40.3          18                 195</span>
+<span class="co">##  4          NA Adelie  Torgersen           NA            NA                  NA</span>
+<span class="co">##  5        3450 Adelie  Torgersen           36.7          19.3               193</span>
+<span class="co">##  6        3650 Adelie  Torgersen           39.3          20.6               190</span>
+<span class="co">##  7        3625 Adelie  Torgersen           38.9          17.8               181</span>
+<span class="co">##  8        4675 Adelie  Torgersen           39.2          19.6               195</span>
+<span class="co">##  9        3475 Adelie  Torgersen           34.1          18.1               193</span>
+<span class="co">## 10        4250 Adelie  Torgersen           42            20.2               190</span>
 <span class="co">## # ... with 334 more rows, and 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;</span>
 
 <span class="fu">glimpse</span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span>
 <span class="co">## Rows: 344</span>
 <span class="co">## Columns: 8</span>
+<span class="co">## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475,~</span>
 <span class="co">## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Ade~</span>
 <span class="co">## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgers~</span>
 <span class="co">## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1,~</span>
 <span class="co">## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1,~</span>
 <span class="co">## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 18~</span>
-<span class="co">## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475,~</span>
 <span class="co">## $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, mal~</span>
 <span class="co">## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 200~</span>
 
@@ -687,40 +687,12 @@
                                <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">body_mass_g</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">penguins_test_res</span>
-<span class="co">## # A tibble: 275 x 1</span>
-<span class="co">##    .pred</span>
-<span class="co">##    &lt;dbl&gt;</span>
-<span class="co">##  1 3327.</span>
-<span class="co">##  2 3617.</span>
-<span class="co">##  3 3441.</span>
-<span class="co">##  4 3103.</span>
-<span class="co">##  5 3549.</span>
-<span class="co">##  6 3363.</span>
-<span class="co">##  7 3117.</span>
-<span class="co">##  8 3174.</span>
-<span class="co">##  9 2797.</span>
-<span class="co">## 10 3298.</span>
-<span class="co">## # ... with 265 more rows</span>
 
 
 <span class="va">penguins_test_res</span> <span class="op">&lt;-</span> <span class="fu">bind_cols</span><span class="op">(</span><span class="va">penguins_test_res</span>, <span class="va">penguins_train</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
                                  <span class="fu">select</span><span class="op">(</span><span class="va">body_mass_g</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">penguins_test_res</span>
-<span class="co">## # A tibble: 275 x 2</span>
-<span class="co">##    .pred body_mass_g</span>
-<span class="co">##    &lt;dbl&gt;       &lt;int&gt;</span>
-<span class="co">##  1 3327.        3800</span>
-<span class="co">##  2 3617.        3250</span>
-<span class="co">##  3 3441.        3450</span>
-<span class="co">##  4 3103.        3625</span>
-<span class="co">##  5 3549.        3475</span>
-<span class="co">##  6 3363.        3300</span>
-<span class="co">##  7 3117.        3700</span>
-<span class="co">##  8 3174.        3325</span>
-<span class="co">##  9 2797.        3400</span>
-<span class="co">## 10 3298.        3800</span>
-<span class="co">## # ... with 265 more rows</span>
 
 <span class="fu">ggplot</span><span class="op">(</span><span class="va">penguins_test_res</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">.pred</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
   <span class="co"># Create a diagonal line:</span>
@@ -728,24 +700,12 @@
   <span class="fu">geom_point</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">labs</span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Predicted Body Mass"</span>, x <span class="op">=</span> <span class="st">"Body Mass"</span><span class="op">)</span> <span class="op">+</span>
   <span class="co"># Scale and size the x- and y-axis uniformly:</span>
-  <span class="fu">coord_obs_pred</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<div class="inline-figure"><img src="r_ml_files/figure-html/metrics-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
+  <span class="fu">coord_obs_pred</span><span class="op">(</span><span class="op">)</span>
+
 <span class="fu">rmse</span><span class="op">(</span><span class="va">penguins_test_res</span>, truth <span class="op">=</span> <span class="va">body_mass_g</span>, estimate <span class="op">=</span> <span class="va">.pred</span><span class="op">)</span>
-<span class="co">## # A tibble: 1 x 3</span>
-<span class="co">##   .metric .estimator .estimate</span>
-<span class="co">##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;</span>
-<span class="co">## 1 rmse    standard        345.</span>
 
 <span class="va">penguins_metrics</span> <span class="op">&lt;-</span> <span class="fu">metric_set</span><span class="op">(</span><span class="va">rmse</span>, <span class="va">rsq</span>, <span class="va">mae</span><span class="op">)</span>
-<span class="fu">penguins_metrics</span><span class="op">(</span><span class="va">penguins_test_res</span>, truth <span class="op">=</span> <span class="va">body_mass_g</span>, estimate <span class="op">=</span> <span class="va">.pred</span><span class="op">)</span>
-<span class="co">## # A tibble: 3 x 3</span>
-<span class="co">##   .metric .estimator .estimate</span>
-<span class="co">##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;</span>
-<span class="co">## 1 rmse    standard     345.   </span>
-<span class="co">## 2 rsq     standard       0.815</span>
-<span class="co">## 3 mae     standard     284.</span></code></pre></div>
+<span class="fu">penguins_metrics</span><span class="op">(</span><span class="va">penguins_test_res</span>, truth <span class="op">=</span> <span class="va">body_mass_g</span>, estimate <span class="op">=</span> <span class="va">.pred</span><span class="op">)</span></code></pre></div>
 
 </div>
 </div>
@@ -777,7 +737,7 @@
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Машинне навчання</strong>", автор Ігор Мірошниченко. <br>Останні зміни: 2022-05-06.</p>
+    <p>"<strong>Машинне навчання</strong>", автор Ігор Мірошниченко. <br>Останні зміни: 2022-05-09.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
