@@ -233,11 +233,16 @@ $$CV = \frac{1}{k}\sum{Q(\hat{y_i}, X_i)}$$
 - Будуємо композицію моделі з $\hat{y_1},\dots,\hat{y_k}$: наприклад, усереднення прогнозів всіх моделей, що може привести до підвищення стійкості моделі.
 ```{r}
 library(tidymodels)
-library(performance)
 
 set.seed(1234)
+n <- 1e3
 
-split <- initial_split(mtcars, prop = 0.8)
+ll_df <- tibble(
+  x = runif(n, 0, 3),
+  y = exp(1 + 0.75 * x + rnorm(n, sd = 0.5))
+)
+
+split <- initial_split(ll_df, prop = 0.8)
 split
 
 cars_train <- training(split)
@@ -253,14 +258,71 @@ lm_spec <- linear_reg() %>%
   set_engine("lm")
 
 lm_fit <- lm_spec %>% 
-  fit(mpg ~ ., data = cars_train)
+  fit(y ~ x, data = cars_train)
 
-lm_fit %>%
-  check_model()
+augment(lm_fit, new_data = cars_train) %>%
+  yardstick::rmse(truth = y, estimate = .pred)
 
-lm_fit %>% 
-  extract_fit_engine() %>%
-  check_heteroscedasticity()
+augment(lm_fit, new_data = cars_test) %>%
+  yardstick::rmse(truth = y, estimate = .pred)
+
+predict(lm_fit, new_data = cars_test)
+
+predict(lm_fit, new_data = cars_test, type = "conf_int")
+
+bind_cols(
+  predict(lm_fit, new_data = ll_df),
+  ll_df
+) %>%
+  select(y, .pred)
+```
+
+```{r}
+poly_tuned_rec <- recipe(y ~ x, data = cars_train) %>%
+  step_poly(x, degree = tune())
+
+poly_tuned_wf <- workflow() %>%
+  add_recipe(poly_tuned_rec) %>%
+  add_model(lm_spec)
+
+cars_folds <- vfold_cv(cars_train, v = 10)
+
+degree_grid <- grid_regular(degree(range = c(1, 10)), levels = 10)
+degree_grid <- tibble(degree = seq(1, 10)) # same
+
+tune_res <- tune_grid(
+  object = poly_tuned_wf, 
+  resamples = cars_folds, 
+  grid = degree_grid
+)
+
+autoplot(tune_res)
+
+collect_metrics(tune_res)
+
+show_best(tune_res, metric = "rmse", n = 1)
+
+best_degree <- show_best(tune_res, metric = "rmse", n = 1)
+
+final_wf <- finalize_workflow(poly_tuned_wf, best_degree)
+
+final_wf
+
+final_fit <- fit(final_wf, cars_train)
+
+final_fit
+
+bind_cols(
+  predict(final_fit, new_data = ll_df),
+  ll_df
+) %>%
+  select(y, .pred)
+
+augment(final_fit, new_data = cars_train) %>%
+  yardstick::rmse(truth = y, estimate = .pred)
+
+augment(final_fit, new_data = cars_test) %>%
+  yardstick::rmse(truth = y, estimate = .pred)
 ```
 
 
@@ -269,23 +331,23 @@ lm_fit %>%
 
 ## Приклад використання
 ```{r}
-fm0 <- lm(dist ~ speed, cars)
+fm0 <- lm(y ~ x, ll_df)
 X <- model.matrix(fm0)
-f1 <- function(b) with(cars, sum(log(cosh(dist - X %*% b))))
+f1 <- function(b) with(ll_df, sum(log(cosh(y - X %*% b))))
 res <- optim(coef(fm0), f1, method = "BFGS")
 res$par
 
-f2 <- function(b) with(cars, mean(abs((dist - X %*% b))))
+f2 <- function(b) with(ll_df, mean(abs((y - X %*% b))))
 res <- optim(coef(fm0), f2, method = "BFGS")
 res$par
 ```
 
 
 ```{r}
-f1 <- function(b) with(cars, sum(log(cosh(dist - X %*% b))))
-f2 <- function(b) with(cars, mean(abs((dist - X %*% b))))
+f1 <- function(b) with(ll_df, sum(log(cosh(y - X %*% b))))
+f2 <- function(b) with(ll_df, mean(abs((y - X %*% b))))
 func <- list(f1, f2)
-fm0 <- lm(dist ~ speed, cars)
+fm0 <- lm(y ~ x, ll_df)
 X <- model.matrix(fm0)
 param <- 0
 
@@ -294,15 +356,14 @@ for (i in 1:length(func)) {
 }
 
 param <- param %>% 
-  bind_rows() %>% 
+  bind_rows(lm_fit$fit$coefficients) %>% 
   rename(Intercept = 1) %>% 
-  mutate(loss = c("Log-Cosh", "MAE"))
+  mutate(loss = c("Log-Cosh", "MAE", "MSE"))
 
-cars %>% 
-  ggplot(aes(speed, dist)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  geom_abline(data = param, aes(intercept = Intercept, slope = speed, color = loss))
+ll_df %>% 
+  ggplot(aes(x, y)) +
+  geom_point(alpha = .2) +
+  geom_abline(data = param, aes(intercept = Intercept, slope = x, color = loss), size = 1)
 ```
 
 bookdown::render_book("index.Rmd", output_dir = "docs")
